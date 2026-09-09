@@ -1,0 +1,346 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    overflow: hidden;
+    background: #10182f;
+}
+
+
+/* =========================
+   TELAS
+========================= */
+
+.screen {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    min-height: 500px;
+    align-items: center;
+    justify-content: center;
+}
+
+.screen.active {
+    display: flex;
+}
+
+
+/* =========================
+   PAINEL
+========================= */
+
+.panel {
+    width: min(90%, 500px);
+    padding: 45px 30px;
+    text-align: center;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.35);
+}
+
+h1 {
+    font-size: clamp(36px, 8vw, 64px);
+    color: #0874c9;
+    margin-bottom: 10px;
+    font-weight: 900;
+}
+
+h2 {
+    font-size: clamp(25px, 6vw, 40px);
+    color: #222;
+    margin-bottom: 30px;
+}
+
+.panel p {
+    font-size: 20px;
+    color: #555;
+    margin-bottom: 35px;
+}
+
+
+/* =========================
+   BOTÕES
+========================= */
+
+button {
+    border: none;
+    cursor: pointer;
+    font-weight: 800;
+    transition: transform 0.15s, opacity 0.15s;
+}
+
+button:hover {
+    transform: scale(1.04);
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+#play-button,
+#character-next,
+#start-game {
+    padding: 16px 45px;
+    border-radius: 50px;
+    background: #19b85a;
+    color: white;
+    font-size: 20px;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+/* =========================
+   PERSONAGENS
+========================= */
+
+.characters {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 35px;
+}
+
+.character {
+    width: 140px;
+    padding: 15px;
+    border-radius: 20px;
+    background: #eef3f8;
+    border: 4px solid transparent;
+}
+
+.character.selected {
+    border-color: #0874c9;
+    background: #dceeff;
+}
+
+.avatar {
+    font-size: 80px;
+    line-height: 1.1;
+    margin-bottom: 10px;
+}
+
+.character span {
+    font-size: 18px;
+    color: #333;
+}
+
+
+/* =========================
+   NOME
+========================= */
+
+#player-name {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 25px;
+    border: 3px solid #d5dce5;
+    border-radius: 12px;
+    font-size: 22px;
+    text-align: center;
+    outline: none;
+}
+
+#player-name:focus {
+    border-color: #0874c9;
+}
+
+
+/* =========================
+   JOGO
+========================= */
+
+#game-screen {
+    display: none;
+    position: relative;
+    flex-direction: column;
+    justify-content: flex-start;
+    background: linear-gradient(#8ed8ff, #dff7ff);
+}
+
+#game-screen.active {
+    display: flex;
+}
+
+
+/* =========================
+   CABEÇALHO
+========================= */
+
+#game-header {
+    width: 100%;
+    height: 75px;
+    padding: 10px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.9);
+    z-index: 10;
+}
+
+#game-header div {
+    display: flex;
+    flex-direction: column;
+}
+
+#game-header span {
+    font-size: 12px;
+    color: #666;
+}
+
+#game-header strong {
+    font-size: 20px;
+    color: #222;
+}
+
+
+/* =========================
+   PALAVRA
+========================= */
+
+#word-display {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    z-index: 5;
+}
+
+.word-letter {
+    font-size: clamp(35px, 8vw, 65px);
+    font-weight: 900;
+    color: rgba(30, 80, 120, 0.20);
+}
+
+.word-letter.found {
+    color: #0874c9;
+}
+
+
+/* =========================
+   ÁREA DO JOGO
+========================= */
+
+#game-area {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    overflow: hidden;
+}
+
+
+/* chão */
+
+#ground {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: #5dbb55;
+    border-top: 8px solid #3e913b;
+}
+
+
+/* personagem */
+
+#player {
+    position: absolute;
+    left: 12%;
+    bottom: 100px;
+    width: 70px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+}
+
+#player-avatar {
+    font-size: 65px;
+}
+
+
+/* letras */
+
+.game-letter {
+    position: absolute;
+    bottom: 110px;
+    width: 60px;
+    height: 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background: white;
+    color: #0874c9;
+
+    font-size: 32px;
+    font-weight: 900;
+
+    box-shadow: 0 7px 15px rgba(0, 0, 0, 0.25);
+
+    user-select: none;
+}
+
+
+/* animação do personagem */
+
+@keyframes running {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+#player-avatar {
+    animation: running 0.35s infinite;
+}
+
+
+/* celular */
+
+@media (max-width: 600px) {
+
+    .panel {
+        padding: 35px 20px;
+    }
+
+    .characters {
+        gap: 15px;
+    }
+
+    .character {
+        width: 120px;
+    }
+
+    .avatar {
+        font-size: 65px;
+    }
+
+    #game-header {
+        padding: 10px 15px;
+    }
+
+    .game-letter {
+        width: 52px;
+        height: 52px;
+        font-size: 27px;
+    }
+}

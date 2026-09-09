@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Runner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- TELA INICIAL -->
+    <section id="start-screen" class="screen active">
+        <div class="panel">
+            <h1>ENGLISH RUNNER</h1>
+            <p>Learn English while you play!</p>
+
+            <button id="play-button">PLAY</button>
+        </div>
+    </section>
+
+
+    <!-- ESCOLHA DO PERSONAGEM -->
+    <section id="character-screen" class="screen">
+        <div class="panel">
+            <h2>CHOOSE YOUR PLAYER</h2>
+
+            <div class="characters">
+
+                <button class="character" data-character="boy">
+                    <div class="avatar">👦</div>
+                    <span>BOY</span>
+                </button>
+
+                <button class="character" data-character="girl">
+                    <div class="avatar">👧</div>
+                    <span>GIRL</span>
+                </button>
+
+            </div>
+
+            <button id="character-next" disabled>CONTINUE</button>
+        </div>
+    </section>
+
+
+    <!-- NOME -->
+    <section id="name-screen" class="screen">
+        <div class="panel">
+            <h2>WHAT'S YOUR NAME?</h2>
+
+            <input
+                type="text"
+                id="player-name"
+                maxlength="15"
+                placeholder="Your name"
+                autocomplete="off"
+            >
+
+            <button id="start-game" disabled>START</button>
+        </div>
+    </section>
+
+
+    <!-- JOGO -->
+    <section id="game-screen" class="screen">
+
+        <div id="game-header">
+
+            <div>
+                <span>PLAYER</span>
+                <strong id="display-name">PLAYER</strong>
+            </div>
+
+            <div>
+                <span>SCORE</span>
+                <strong id="score">0</strong>
+            </div>
+
+        </div>
+
+
+        <!-- PALAVRA-ALVO -->
+        <div id="word-display"></div>
+
+
+        <!-- ÁREA DO JOGO -->
+        <div id="game-area">
+
+            <div id="ground"></div>
+
+            <div id="player">
+                <span id="player-avatar">👦</span>
+            </div>
+
+            <div id="letters-container"></div>
+
+        </div>
+
+    </section>
+
+
+    <script src="data/words.js"></script>
+    <script src="game.js"></script>
+
+</body>
+</html>
