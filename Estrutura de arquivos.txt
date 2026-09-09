@@ -1,8 +1,0 @@
-english-runner
-│
-├── index.html
-├── style.css
-├── game.js
-│
-└── data
-    └── words.js
