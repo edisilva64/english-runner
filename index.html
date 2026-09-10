@@ -10,90 +10,136 @@
 <body>
 
     <!-- TELA INICIAL -->
-    <section id="start-screen" class="screen active">
-        <div class="panel">
-            <h1>ENGLISH RUNNER</h1>
-            <p>Learn English while you play!</p>
+    <section id="start-screen" class="screen">
 
-            <button id="play-button">PLAY</button>
-        </div>
-    </section>
+        <div class="start-box">
 
+            <h1>English Runner</h1>
 
-    <!-- ESCOLHA DO PERSONAGEM -->
-    <section id="character-screen" class="screen">
-        <div class="panel">
-            <h2>CHOOSE YOUR PLAYER</h2>
+            <p class="subtitle">
+                Run, find the letters and learn English!
+            </p>
+
+            <label>Your name</label>
+            <input
+                type="text"
+                id="player-name"
+                placeholder="Enter your name"
+                maxlength="15"
+            >
+
+            <h2>Choose your character</h2>
 
             <div class="characters">
 
-                <button class="character" data-character="boy">
-                    <div class="avatar">👦</div>
-                    <span>BOY</span>
+                <button class="character selected" data-character="boy">
+                    <div class="character-preview boy-preview">
+                        <div class="head"></div>
+                        <div class="body"></div>
+                        <div class="arm left-arm"></div>
+                        <div class="arm right-arm"></div>
+                        <div class="leg left-leg"></div>
+                        <div class="leg right-leg"></div>
+                    </div>
+                    <span>Boy</span>
                 </button>
 
                 <button class="character" data-character="girl">
-                    <div class="avatar">👧</div>
-                    <span>GIRL</span>
+                    <div class="character-preview girl-preview">
+                        <div class="head"></div>
+                        <div class="hair"></div>
+                        <div class="body"></div>
+                        <div class="arm left-arm"></div>
+                        <div class="arm right-arm"></div>
+                        <div class="leg left-leg"></div>
+                        <div class="leg right-leg"></div>
+                    </div>
+                    <span>Girl</span>
                 </button>
 
             </div>
 
-            <button id="character-next" disabled>CONTINUE</button>
+            <button id="start-button">
+                START GAME
+            </button>
+
         </div>
-    </section>
 
-
-    <!-- NOME -->
-    <section id="name-screen" class="screen">
-        <div class="panel">
-            <h2>WHAT'S YOUR NAME?</h2>
-
-            <input
-                type="text"
-                id="player-name"
-                maxlength="15"
-                placeholder="Your name"
-                autocomplete="off"
-            >
-
-            <button id="start-game" disabled>START</button>
-        </div>
     </section>
 
 
     <!-- JOGO -->
-    <section id="game-screen" class="screen">
+    <section id="game-screen" class="screen hidden">
 
-        <div id="game-header">
+        <header class="game-header">
 
             <div>
-                <span>PLAYER</span>
+                <small>PLAYER</small>
                 <strong id="display-name">PLAYER</strong>
             </div>
 
+            <div class="target-container">
+                <small>WORD</small>
+                <div id="word-display"></div>
+            </div>
+
             <div>
-                <span>SCORE</span>
+                <small>SCORE</small>
                 <strong id="score">0</strong>
             </div>
 
-        </div>
+        </header>
 
 
-        <!-- PALAVRA-ALVO -->
-        <div id="word-display"></div>
+        <main id="game-area">
 
+            <!-- cenário -->
+            <div class="sky"></div>
 
-        <!-- ÁREA DO JOGO -->
-        <div id="game-area">
+            <div class="cloud cloud1"></div>
+            <div class="cloud cloud2"></div>
 
-            <div id="ground"></div>
+            <div class="mountains"></div>
 
-            <div id="player">
-                <span id="player-avatar">👦</span>
+            <div class="ground">
+                <div class="ground-line"></div>
             </div>
 
+            <!-- letras aparecem aqui -->
             <div id="letters-container"></div>
+
+            <!-- personagem -->
+            <div id="player" class="player">
+
+                <div class="player-head"></div>
+                <div class="player-hair"></div>
+
+                <div class="player-body"></div>
+
+                <div class="player-arm player-arm-left"></div>
+                <div class="player-arm player-arm-right"></div>
+
+                <div class="player-leg player-leg-left"></div>
+                <div class="player-leg player-leg-right"></div>
+
+            </div>
+
+            <!-- mensagem -->
+            <div id="message"></div>
+
+        </main>
+
+
+        <div class="controls">
+
+            <button id="jump-button">
+                ↑
+                <span>JUMP</span>
+            </button>
+
+            <p>
+                Press <b>SPACE</b> or <b>↑</b> to jump
+            </p>
 
         </div>
 
