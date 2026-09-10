@@ -7,7 +7,7 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     overflow: hidden;
-    background: #10182f;
+    background: #eaf7ff;
 }
 
 
@@ -16,159 +16,205 @@ body {
 ========================= */
 
 .screen {
-    display: none;
     width: 100vw;
     height: 100vh;
-    min-height: 500px;
-    align-items: center;
-    justify-content: center;
 }
 
-.screen.active {
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================
+   TELA INICIAL
+========================= */
+
+#start-screen {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(
+        #8ed8ff,
+        #e9f8ff
+    );
 }
 
-
-/* =========================
-   PAINEL
-========================= */
-
-.panel {
+.start-box {
     width: min(90%, 500px);
-    padding: 45px 30px;
-    text-align: center;
+    padding: 35px;
+    background: white;
     border-radius: 25px;
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.35);
+    text-align: center;
+    box-shadow: 0 15px 50px rgba(0,0,0,.15);
 }
 
-h1 {
-    font-size: clamp(36px, 8vw, 64px);
-    color: #0874c9;
+.start-box h1 {
+    font-size: 42px;
     margin-bottom: 10px;
-    font-weight: 900;
 }
 
-h2 {
-    font-size: clamp(25px, 6vw, 40px);
-    color: #222;
-    margin-bottom: 30px;
+.subtitle {
+    color: #666;
+    margin-bottom: 25px;
 }
 
-.panel p {
+.start-box label {
+    display: block;
+    text-align: left;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+#player-name {
+    width: 100%;
+    padding: 13px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 17px;
+    margin-bottom: 25px;
+}
+
+.start-box h2 {
     font-size: 20px;
-    color: #555;
-    margin-bottom: 35px;
+    margin-bottom: 15px;
 }
-
-
-/* =========================
-   BOTÕES
-========================= */
-
-button {
-    border: none;
-    cursor: pointer;
-    font-weight: 800;
-    transition: transform 0.15s, opacity 0.15s;
-}
-
-button:hover {
-    transform: scale(1.04);
-}
-
-button:active {
-    transform: scale(0.97);
-}
-
-#play-button,
-#character-next,
-#start-game {
-    padding: 16px 45px;
-    border-radius: 50px;
-    background: #19b85a;
-    color: white;
-    font-size: 20px;
-}
-
-button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    transform: none;
-}
-
-
-/* =========================
-   PERSONAGENS
-========================= */
 
 .characters {
     display: flex;
     justify-content: center;
-    gap: 30px;
-    margin-bottom: 35px;
+    gap: 25px;
+    margin-bottom: 30px;
 }
 
 .character {
-    width: 140px;
+    width: 130px;
     padding: 15px;
-    border-radius: 20px;
-    background: #eef3f8;
-    border: 4px solid transparent;
+    border: 3px solid transparent;
+    border-radius: 15px;
+    background: #f5f5f5;
+    cursor: pointer;
 }
 
 .character.selected {
-    border-color: #0874c9;
-    background: #dceeff;
-}
-
-.avatar {
-    font-size: 80px;
-    line-height: 1.1;
-    margin-bottom: 10px;
+    border-color: #1976d2;
+    background: #e3f2fd;
 }
 
 .character span {
-    font-size: 18px;
-    color: #333;
-}
-
-
-/* =========================
-   NOME
-========================= */
-
-#player-name {
     display: block;
-    width: 100%;
-    padding: 15px;
-    margin-bottom: 25px;
-    border: 3px solid #d5dce5;
-    border-radius: 12px;
-    font-size: 22px;
-    text-align: center;
-    outline: none;
-}
-
-#player-name:focus {
-    border-color: #0874c9;
+    margin-top: 10px;
+    font-weight: bold;
 }
 
 
 /* =========================
-   JOGO
+   PERSONAGEM DA TELA INICIAL
 ========================= */
 
-#game-screen {
-    display: none;
+.character-preview {
     position: relative;
-    flex-direction: column;
-    justify-content: flex-start;
-    background: linear-gradient(#8ed8ff, #dff7ff);
+    width: 70px;
+    height: 110px;
+    margin: auto;
 }
 
-#game-screen.active {
-    display: flex;
+.character-preview .head,
+.character-preview .player-head {
+    position: absolute;
+    width: 42px;
+    height: 42px;
+    background: #f4b183;
+    border-radius: 50%;
+    left: 14px;
+    top: 3px;
+}
+
+.character-preview .body {
+    position: absolute;
+    width: 36px;
+    height: 45px;
+    background: #1976d2;
+    left: 17px;
+    top: 43px;
+    border-radius: 8px;
+}
+
+.character-preview .arm {
+    position: absolute;
+    width: 10px;
+    height: 42px;
+    background: #f4b183;
+    top: 45px;
+    border-radius: 8px;
+}
+
+.character-preview .left-arm {
+    left: 8px;
+    transform: rotate(25deg);
+}
+
+.character-preview .right-arm {
+    right: 8px;
+    transform: rotate(-25deg);
+}
+
+.character-preview .leg {
+    position: absolute;
+    width: 12px;
+    height: 38px;
+    background: #333;
+    top: 82px;
+    border-radius: 8px;
+}
+
+.character-preview .left-leg {
+    left: 18px;
+    transform: rotate(15deg);
+}
+
+.character-preview .right-leg {
+    right: 18px;
+    transform: rotate(-15deg);
+}
+
+.girl-preview .body {
+    background: #e91e63;
+}
+
+.girl-preview .hair {
+    position: absolute;
+    width: 47px;
+    height: 47px;
+    background: #4b2e1f;
+    border-radius: 50%;
+    left: 11px;
+    top: 0;
+    z-index: 0;
+}
+
+.girl-preview .head {
+    z-index: 1;
+}
+
+
+/* =========================
+   BOTÃO
+========================= */
+
+#start-button {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background: #1976d2;
+    color: white;
+    font-size: 19px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#start-button:hover {
+    transform: scale(1.02);
 }
 
 
@@ -176,54 +222,53 @@ button:disabled {
    CABEÇALHO
 ========================= */
 
-#game-header {
-    width: 100%;
-    height: 75px;
-    padding: 10px 25px;
+.game-header {
+    height: 80px;
+    background: white;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.9);
-    z-index: 10;
+    justify-content: space-between;
+    padding: 10px 22px;
+    position: relative;
+    z-index: 20;
 }
 
-#game-header div {
-    display: flex;
-    flex-direction: column;
-}
-
-#game-header span {
+.game-header small {
+    display: block;
+    color: #555;
     font-size: 12px;
-    color: #666;
 }
 
-#game-header strong {
+.game-header strong {
+    display: block;
     font-size: 20px;
-    color: #222;
 }
 
-
-/* =========================
-   PALAVRA
-========================= */
+.target-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
 
 #word-display {
-    height: 100px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 10px;
-    z-index: 5;
+    gap: 8px;
+    margin-top: 3px;
 }
 
 .word-letter {
-    font-size: clamp(35px, 8vw, 65px);
-    font-weight: 900;
-    color: rgba(30, 80, 120, 0.20);
+    width: 30px;
+    height: 34px;
+    border-bottom: 4px solid rgba(40,120,180,.25);
+    color: #1976d2;
+    font-size: 27px;
+    font-weight: bold;
 }
 
-.word-letter.found {
-    color: #0874c9;
+.word-letter.empty {
+    color: transparent;
 }
 
 
@@ -234,113 +279,334 @@ button:disabled {
 #game-area {
     position: relative;
     width: 100%;
-    flex: 1;
+    height: calc(100vh - 135px);
     overflow: hidden;
 }
 
+.sky {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        #83d4f7 0%,
+        #d9f5ff 75%
+    );
+}
 
-/* chão */
+.cloud {
+    position: absolute;
+    width: 120px;
+    height: 35px;
+    background: white;
+    border-radius: 30px;
+    opacity: .8;
+}
 
-#ground {
+.cloud::before,
+.cloud::after {
+    content: "";
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+}
+
+.cloud::before {
+    width: 55px;
+    height: 55px;
+    left: 20px;
+    bottom: 0;
+}
+
+.cloud::after {
+    width: 45px;
+    height: 45px;
+    right: 20px;
+    bottom: 0;
+}
+
+.cloud1 {
+    top: 60px;
+    left: 15%;
+}
+
+.cloud2 {
+    top: 120px;
+    left: 65%;
+    transform: scale(.7);
+}
+
+
+/* =========================
+   MONTANHAS
+========================= */
+
+.mountains {
+    position: absolute;
+    bottom: 90px;
+    width: 100%;
+    height: 170px;
+    background:
+        linear-gradient(
+            135deg,
+            transparent 50%,
+            rgba(90,160,120,.5) 50%
+        ),
+        linear-gradient(
+            225deg,
+            transparent 50%,
+            rgba(90,160,120,.5) 50%
+        );
+    background-size: 280px 170px;
+    opacity: .5;
+}
+
+
+/* =========================
+   CHÃO
+========================= */
+
+.ground {
     position: absolute;
     bottom: 0;
-    left: 0;
     width: 100%;
-    height: 100px;
-    background: #5dbb55;
-    border-top: 8px solid #3e913b;
-}
-
-
-/* personagem */
-
-#player {
-    position: absolute;
-    left: 12%;
-    bottom: 100px;
-    width: 70px;
     height: 90px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 5;
+    background: #59b957;
 }
 
-#player-avatar {
-    font-size: 65px;
+.ground-line {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 8px;
+    background: #3f963f;
 }
 
 
-/* letras */
+/* =========================
+   PERSONAGEM
+========================= */
+
+.player {
+    position: absolute;
+    width: 70px;
+    height: 110px;
+    left: 12%;
+    bottom: 82px;
+    z-index: 10;
+}
+
+.player-head {
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    left: 13px;
+    top: 2px;
+    background: #f4b183;
+    border-radius: 50%;
+    z-index: 3;
+}
+
+.player-hair {
+    position: absolute;
+    width: 48px;
+    height: 25px;
+    left: 11px;
+    top: 0;
+    background: #4a2d1d;
+    border-radius: 50% 50% 35% 35%;
+    z-index: 4;
+}
+
+.player-body {
+    position: absolute;
+    width: 38px;
+    height: 48px;
+    left: 16px;
+    top: 42px;
+    background: #1976d2;
+    border-radius: 8px;
+    z-index: 2;
+}
+
+.player-arm {
+    position: absolute;
+    width: 11px;
+    height: 44px;
+    top: 44px;
+    background: #f4b183;
+    border-radius: 8px;
+    transform-origin: top center;
+    z-index: 1;
+}
+
+.player-arm-left {
+    left: 8px;
+}
+
+.player-arm-right {
+    right: 7px;
+}
+
+.player-leg {
+    position: absolute;
+    width: 13px;
+    height: 40px;
+    top: 83px;
+    background: #333;
+    border-radius: 8px;
+    transform-origin: top center;
+}
+
+.player-leg-left {
+    left: 18px;
+}
+
+.player-leg-right {
+    right: 18px;
+}
+
+
+/* ANIMAÇÃO DE CORRIDA */
+
+.player.running .player-arm-left {
+    animation: armLeft .25s infinite alternate;
+}
+
+.player.running .player-arm-right {
+    animation: armRight .25s infinite alternate;
+}
+
+.player.running .player-leg-left {
+    animation: legLeft .25s infinite alternate;
+}
+
+.player.running .player-leg-right {
+    animation: legRight .25s infinite alternate;
+}
+
+@keyframes armLeft {
+    from { transform: rotate(35deg); }
+    to { transform: rotate(-35deg); }
+}
+
+@keyframes armRight {
+    from { transform: rotate(-35deg); }
+    to { transform: rotate(35deg); }
+}
+
+@keyframes legLeft {
+    from { transform: rotate(-25deg); }
+    to { transform: rotate(25deg); }
+}
+
+@keyframes legRight {
+    from { transform: rotate(25deg); }
+    to { transform: rotate(-25deg); }
+}
+
+
+/* =========================
+   LETRAS
+========================= */
 
 .game-letter {
     position: absolute;
-    bottom: 110px;
-    width: 60px;
-    height: 60px;
-
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: white;
+    border: 4px solid #1976d2;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 30px;
+    font-weight: bold;
+    color: #1976d2;
+    z-index: 8;
+    box-shadow: 0 5px 15px rgba(0,0,0,.15);
+}
 
-    border-radius: 15px;
 
+/* =========================
+   MENSAGEM
+========================= */
+
+#message {
+    position: absolute;
+    left: 50%;
+    top: 25%;
+    transform: translate(-50%, -50%);
+    font-size: 35px;
+    font-weight: bold;
+    color: #1976d2;
+    text-shadow: 2px 2px white;
+    z-index: 30;
+    pointer-events: none;
+}
+
+
+/* =========================
+   CONTROLES
+========================= */
+
+.controls {
+    height: 55px;
     background: white;
-    color: #0874c9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
 
-    font-size: 32px;
-    font-weight: 900;
+#jump-button {
+    display: none;
+    border: none;
+    border-radius: 10px;
+    background: #1976d2;
+    color: white;
+    padding: 7px 15px;
+    font-weight: bold;
+}
 
-    box-shadow: 0 7px 15px rgba(0, 0, 0, 0.25);
+#jump-button span {
+    margin-left: 5px;
+}
 
-    user-select: none;
+.controls p {
+    color: #777;
+    font-size: 13px;
 }
 
 
-/* animação do personagem */
+/* =========================
+   CELULAR
+========================= */
 
-@keyframes running {
-    0%, 100% {
-        transform: translateY(0);
+@media (max-width: 700px) {
+
+    .game-header {
+        height: 70px;
     }
 
-    50% {
-        transform: translateY(-5px);
-    }
-}
-
-#player-avatar {
-    animation: running 0.35s infinite;
-}
-
-
-/* celular */
-
-@media (max-width: 600px) {
-
-    .panel {
-        padding: 35px 20px;
+    #game-area {
+        height: calc(100vh - 125px);
     }
 
-    .characters {
-        gap: 15px;
-    }
-
-    .character {
-        width: 120px;
-    }
-
-    .avatar {
-        font-size: 65px;
-    }
-
-    #game-header {
-        padding: 10px 15px;
+    .player {
+        left: 10%;
     }
 
     .game-letter {
-        width: 52px;
-        height: 52px;
-        font-size: 27px;
+        width: 48px;
+        height: 48px;
+        font-size: 25px;
     }
+
+    #jump-button {
+        display: block;
+    }
+
+    .controls p {
+        display: none;
+    }
+
 }
