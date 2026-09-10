@@ -1,19 +1,6 @@
-/* =========================
-   ESTADO DO JOGO
-========================= */
-
-let selectedCharacter = null;
-let playerName = "";
-
-let currentWordIndex = 0;
-let currentLetterIndex = 0;
-
-let score = 0;
-
-let gameRunning = false;
-let letterObjects = [];
-
-let lastTime = 0;
+/* =====================================================
+   ENGLISH RUNNER
+===================================================== */
 
 
 /* =========================
@@ -21,110 +8,78 @@ let lastTime = 0;
 ========================= */
 
 const startScreen = document.getElementById("start-screen");
-const characterScreen = document.getElementById("character-screen");
-const nameScreen = document.getElementById("name-screen");
 const gameScreen = document.getElementById("game-screen");
 
-const playButton = document.getElementById("play-button");
+const playerNameInput = document.getElementById("player-name");
+const displayName = document.getElementById("display-name");
+
+const startButton = document.getElementById("start-button");
+const jumpButton = document.getElementById("jump-button");
+
+const player = document.getElementById("player");
+const lettersContainer = document.getElementById("letters-container");
+
+const wordDisplay = document.getElementById("word-display");
+const scoreDisplay = document.getElementById("score");
+const message = document.getElementById("message");
+
+
+/* =========================
+   ESTADO DO JOGO
+========================= */
+
+let playerName = "PLAYER";
+let selectedCharacter = "boy";
+
+let score = 0;
+
+let currentWord = "";
+let currentLetterIndex = 0;
+
+let letters = [];
+
+let gameRunning = false;
+
+let playerY = 0;
+let velocityY = 0;
+
+const gravity = 0.8;
+const jumpPower = -14;
+
+let lastTime = 0;
+
+
+/* =========================
+   PERSONAGEM
+========================= */
 
 const characterButtons =
     document.querySelectorAll(".character");
-
-const characterNext =
-    document.getElementById("character-next");
-
-const playerNameInput =
-    document.getElementById("player-name");
-
-const startGameButton =
-    document.getElementById("start-game");
-
-const displayName =
-    document.getElementById("display-name");
-
-const scoreDisplay =
-    document.getElementById("score");
-
-const wordDisplay =
-    document.getElementById("word-display");
-
-const lettersContainer =
-    document.getElementById("letters-container");
-
-const playerAvatar =
-    document.getElementById("player-avatar");
-
-const gameArea =
-    document.getElementById("game-area");
-
-
-/* =========================
-   TROCA DE TELA
-========================= */
-
-function showScreen(screen) {
-
-    document.querySelectorAll(".screen").forEach(item => {
-        item.classList.remove("active");
-    });
-
-    screen.classList.add("active");
-}
-
-
-/* =========================
-   BOTÃO PLAY
-========================= */
-
-playButton.addEventListener("click", () => {
-
-    showScreen(characterScreen);
-
-});
-
-
-/* =========================
-   ESCOLHA DO PERSONAGEM
-========================= */
 
 characterButtons.forEach(button => {
 
     button.addEventListener("click", () => {
 
-        characterButtons.forEach(item => {
-            item.classList.remove("selected");
-        });
+        characterButtons.forEach(b =>
+            b.classList.remove("selected")
+        );
 
         button.classList.add("selected");
 
         selectedCharacter =
             button.dataset.character;
 
-        characterNext.disabled = false;
+        if (selectedCharacter === "girl") {
+
+            player.classList.add("girl");
+
+        } else {
+
+            player.classList.remove("girl");
+
+        }
 
     });
-
-});
-
-
-characterNext.addEventListener("click", () => {
-
-    showScreen(nameScreen);
-
-});
-
-
-/* =========================
-   NOME
-========================= */
-
-playerNameInput.addEventListener("input", () => {
-
-    playerName =
-        playerNameInput.value.trim();
-
-    startGameButton.disabled =
-        playerName.length === 0;
 
 });
 
@@ -133,174 +88,353 @@ playerNameInput.addEventListener("input", () => {
    INICIAR JOGO
 ========================= */
 
-startGameButton.addEventListener("click", () => {
+startButton.addEventListener("click", startGame);
 
-    if (!playerName || !selectedCharacter) {
-        return;
-    }
+function startGame() {
+
+    playerName =
+        playerNameInput.value.trim() || "PLAYER";
 
     displayName.textContent =
         playerName.toUpperCase();
-
-    playerAvatar.textContent =
-        selectedCharacter === "boy"
-            ? "👦"
-            : "👧";
 
     score = 0;
 
     scoreDisplay.textContent = score;
 
-    currentWordIndex = 0;
+    startScreen.classList.add("hidden");
+    gameScreen.classList.remove("hidden");
 
-    showScreen(gameScreen);
+    gameRunning = true;
 
-    startWord();
+    player.classList.add("running");
 
-});
-
-
-/* =========================
-   PALAVRA
-========================= */
-
-function startWord() {
-
-    gameRunning = false;
-
-    clearLetters();
-
-    currentLetterIndex = 0;
-
-    const currentWord =
-        WORDS[currentWordIndex].word;
-
-    wordDisplay.innerHTML = "";
-
-    for (let i = 0; i < currentWord.length; i++) {
-
-        const letter =
-            document.createElement("span");
-
-        letter.className =
-            "word-letter";
-
-        letter.textContent = "_";
-
-        letter.dataset.index = i;
-
-        wordDisplay.appendChild(letter);
-    }
-
-    createLetters(currentWord);
-
-    setTimeout(() => {
-
-        gameRunning = true;
-
-    }, 500);
-
-}
-
-
-/* =========================
-   CRIA LETRAS
-========================= */
-
-function createLetters(word) {
-
-    lettersContainer.innerHTML = "";
-
-    letterObjects = [];
-
-    const areaWidth =
-        gameArea.clientWidth;
-
-    const spacing =
-        Math.max(130, areaWidth / word.length);
-
-    word.split("").forEach((letter, index) => {
-
-        const element =
-            document.createElement("div");
-
-        element.className =
-            "game-letter";
-
-        element.textContent =
-            letter;
-
-        /*
-         * As letras começam fora da tela
-         * e vão se aproximando do jogador.
-         */
-
-        const startX =
-            areaWidth + index * spacing;
-
-        element.style.left =
-            `${startX}px`;
-
-        lettersContainer.appendChild(element);
-
-        letterObjects.push({
-
-            element: element,
-            letter: letter,
-            x: startX,
-            collected: false
-
-        });
-
-    });
+    startNewWord();
 
     requestAnimationFrame(gameLoop);
 }
 
 
 /* =========================
-   LOOP DO JOGO
+   NOVA PALAVRA
+========================= */
+
+function startNewWord() {
+
+    lettersContainer.innerHTML = "";
+
+    letters = [];
+
+    currentLetterIndex = 0;
+
+    const randomIndex =
+        Math.floor(Math.random() * words.length);
+
+    currentWord =
+        words[randomIndex].toUpperCase();
+
+    showWord();
+
+    createLetters();
+
+}
+
+
+/* =========================
+   MOSTRAR PALAVRA
+========================= */
+
+function showWord() {
+
+    wordDisplay.innerHTML = "";
+
+    for (let i = 0; i < currentWord.length; i++) {
+
+        const span =
+            document.createElement("div");
+
+        span.className =
+            "word-letter empty";
+
+        span.textContent =
+            currentWord[i];
+
+        wordDisplay.appendChild(span);
+
+    }
+
+}
+
+
+/* =========================
+   CRIAR LETRAS
+========================= */
+
+function createLetters() {
+
+    /*
+       Criamos a letra correta e algumas
+       letras falsas.
+    */
+
+    const requiredLetter =
+        currentWord[currentLetterIndex];
+
+    createLetter(requiredLetter, true);
+
+    const wrongLetters = [
+        "A","B","C","D","E","F","G","H",
+        "I","J","K","L","M","N","O","P",
+        "Q","R","S","T","U","V","W","X",
+        "Y","Z"
+    ];
+
+    for (let i = 0; i < 3; i++) {
+
+        let wrong;
+
+        do {
+
+            wrong =
+                wrongLetters[
+                    Math.floor(
+                        Math.random() *
+                        wrongLetters.length
+                    )
+                ];
+
+        } while (wrong === requiredLetter);
+
+        createLetter(wrong, false);
+
+    }
+
+}
+
+
+/* =========================
+   CRIAR UMA LETRA
+========================= */
+
+function createLetter(letter, correct) {
+
+    const element =
+        document.createElement("div");
+
+    element.className =
+        "game-letter";
+
+    element.textContent =
+        letter;
+
+    /*
+       As letras começam à direita.
+    */
+
+    const gameWidth =
+        document.getElementById("game-area")
+        .clientWidth;
+
+    element.style.left =
+        gameWidth + Math.random() * 300 + "px";
+
+
+    /*
+       Alturas diferentes.
+       Quanto maior o bottom,
+       mais alta estará a letra.
+    */
+
+    const heightOptions = [
+        82,
+        145,
+        210
+    ];
+
+    const height =
+        heightOptions[
+            Math.floor(
+                Math.random() *
+                heightOptions.length
+            )
+        ];
+
+    element.style.bottom =
+        height + "px";
+
+
+    lettersContainer.appendChild(element);
+
+
+    letters.push({
+
+        element: element,
+
+        x: parseFloat(
+            element.style.left
+        ),
+
+        bottom: height,
+
+        letter: letter,
+
+        correct: correct,
+
+        collected: false
+
+    });
+
+}
+
+
+/* =========================
+   LOOP PRINCIPAL
 ========================= */
 
 function gameLoop(timestamp) {
 
-    if (!gameRunning) {
+    if (!gameRunning)
         return;
-    }
-
-    if (!lastTime) {
-        lastTime = timestamp;
-    }
 
     const delta =
         timestamp - lastTime;
 
     lastTime = timestamp;
 
-    const speed =
-        0.35 * delta;
+    updatePlayer();
 
-    letterObjects.forEach(item => {
+    updateLetters();
 
-        if (item.collected) {
+    checkCollisions();
+
+    requestAnimationFrame(gameLoop);
+
+}
+
+
+/* =========================
+   MOVIMENTO DO PERSONAGEM
+========================= */
+
+function updatePlayer() {
+
+    /*
+       Gravidade
+    */
+
+    velocityY += gravity;
+
+    playerY += velocityY;
+
+
+    /*
+       O personagem começa no chão.
+    */
+
+    if (playerY > 0) {
+
+        playerY = 0;
+
+        velocityY = 0;
+
+    }
+
+    player.style.transform =
+        `translateY(${playerY}px)`;
+
+}
+
+
+/* =========================
+   PULAR
+========================= */
+
+function jump() {
+
+    /*
+       Só pode pular quando
+       está no chão.
+    */
+
+    if (playerY === 0) {
+
+        velocityY = jumpPower;
+
+    }
+
+}
+
+document.addEventListener("keydown", event => {
+
+    if (
+        event.code === "Space" ||
+        event.code === "ArrowUp"
+    ) {
+
+        event.preventDefault();
+
+        jump();
+
+    }
+
+});
+
+
+jumpButton.addEventListener(
+    "click",
+    jump
+);
+
+
+/* =========================
+   MOVIMENTO DAS LETRAS
+========================= */
+
+function updateLetters() {
+
+    const speed = 5;
+
+    letters.forEach(letter => {
+
+        if (letter.collected)
             return;
+
+        letter.x -= speed;
+
+        letter.element.style.left =
+            letter.x + "px";
+
+        /*
+           Remove letras que saíram
+           da tela.
+        */
+
+        if (letter.x < -80) {
+
+            letter.element.remove();
+
+            letter.collected = true;
+
         }
-
-        item.x -= speed;
-
-        item.element.style.left =
-            `${item.x}px`;
-
-        checkCollision(item);
 
     });
 
-    /*
-     * Se ainda existem letras,
-     * continuamos o jogo.
-     */
 
-    requestAnimationFrame(gameLoop);
+    /*
+       Quando todas desaparecerem,
+       criamos novamente as letras
+       da próxima tentativa.
+    */
+
+    const activeLetters =
+        letters.filter(l => !l.collected);
+
+    if (activeLetters.length === 0) {
+
+        createLetters();
+
+    }
+
 }
 
 
@@ -308,82 +442,158 @@ function gameLoop(timestamp) {
    COLISÃO
 ========================= */
 
-function checkCollision(item) {
+function checkCollisions() {
 
     const playerRect =
-        document.getElementById("player")
-            .getBoundingClientRect();
+        player.getBoundingClientRect();
 
-    const letterRect =
-        item.element.getBoundingClientRect();
+    letters.forEach(letter => {
 
-    const collision =
-        playerRect.left < letterRect.right &&
-        playerRect.right > letterRect.left &&
-        playerRect.top < letterRect.bottom &&
-        playerRect.bottom > letterRect.top;
+        if (letter.collected)
+            return;
 
-    if (collision) {
+        const letterRect =
+            letter.element.getBoundingClientRect();
 
-        collectLetter(item);
 
-    }
+        /*
+           Verifica se o personagem
+           encostou na letra.
+        */
+
+        const collision =
+            playerRect.left <
+            letterRect.right &&
+
+            playerRect.right >
+            letterRect.left &&
+
+            playerRect.top <
+            letterRect.bottom &&
+
+            playerRect.bottom >
+            letterRect.top;
+
+
+        if (collision) {
+
+            collectLetter(letter);
+
+        }
+
+    });
 
 }
 
 
 /* =========================
-   COLETAR LETRA
+   CAPTURAR LETRA
 ========================= */
 
-function collectLetter(item) {
-
-    if (item.collected) {
-        return;
-    }
+function collectLetter(letter) {
 
     /*
-     * A criança só pode pegar
-     * a próxima letra da palavra.
-     */
-
-    const currentWord =
-        WORDS[currentWordIndex].word;
+       A letra precisa ser a próxima
+       letra da palavra.
+    */
 
     const expectedLetter =
         currentWord[currentLetterIndex];
 
-    if (item.letter !== expectedLetter) {
+
+    if (letter.letter === expectedLetter) {
 
         /*
-         * Por enquanto, não fazemos nada
-         * quando a letra é errada.
-         *
-         * Depois acrescentaremos penalidade,
-         * som e feedback visual.
-         */
+           CORRETA
+        */
 
-        return;
-    }
+        letter.collected = true;
 
-    item.collected = true;
+        letter.element.remove();
 
-    item.element.remove();
+        currentLetterIndex++;
 
-    updateWord();
+        score += 100;
 
-    playLetterSound(item.letter);
+        scoreDisplay.textContent =
+            score;
 
-    currentLetterIndex++;
 
-    score += 100;
+        /*
+           Preenche a letra no topo.
+        */
 
-    scoreDisplay.textContent =
-        score;
+        const wordLetters =
+            document.querySelectorAll(
+                ".word-letter"
+            );
 
-    if (currentLetterIndex >= currentWord.length) {
+        wordLetters[
+            currentLetterIndex - 1
+        ].classList.remove("empty");
 
-        finishWord();
+
+        /*
+           Pronuncia a letra.
+        */
+
+        speakLetter(letter.letter);
+
+
+        /*
+           Verifica se a palavra terminou.
+        */
+
+        if (
+            currentLetterIndex >=
+            currentWord.length
+        ) {
+
+            finishWord();
+
+        } else {
+
+            /*
+               Cria novamente as letras
+               para procurar a próxima.
+            */
+
+            setTimeout(() => {
+
+                createLetters();
+
+            }, 250);
+
+        }
+
+    } else {
+
+        /*
+           LETRA ERRADA
+
+           Por enquanto não perde pontos.
+           Apenas mostra uma pequena reação.
+        */
+
+        letter.element.style.borderColor =
+            "#e53935";
+
+        letter.element.style.transform =
+            "scale(1.2)";
+
+        setTimeout(() => {
+
+            if (!letter.collected) {
+
+                letter.element.style.borderColor =
+                    "#1976d2";
+
+                letter.element.style.transform =
+                    "scale(1)";
+
+            }
+
+        }, 250);
 
     }
 
@@ -391,52 +601,21 @@ function collectLetter(item) {
 
 
 /* =========================
-   ATUALIZA PALAVRA
-========================= */
-
-function updateWord() {
-
-    const letters =
-        wordDisplay.querySelectorAll(".word-letter");
-
-    for (let i = 0; i < currentLetterIndex; i++) {
-
-        letters[i].textContent =
-            WORDS[currentWordIndex].word[i];
-
-        letters[i].classList.add("found");
-
-    }
-
-}
-
-
-/* =========================
-   TERMINA PALAVRA
+   TERMINAR PALAVRA
 ========================= */
 
 function finishWord() {
 
-    gameRunning = false;
+    message.textContent =
+        currentWord;
 
-    const word =
-        WORDS[currentWordIndex].word;
-
-    playWordSound(word);
+    speakWord(currentWord);
 
     setTimeout(() => {
 
-        currentWordIndex++;
+        message.textContent = "";
 
-        if (currentWordIndex >= WORDS.length) {
-
-            endGame();
-
-        } else {
-
-            startWord();
-
-        }
+        startNewWord();
 
     }, 1800);
 
@@ -444,86 +623,46 @@ function finishWord() {
 
 
 /* =========================
-   ÁUDIO DA LETRA
+   VOZ
 ========================= */
 
-function playLetterSound(letter) {
+function speakLetter(letter) {
 
-    /*
-     * Primeira versão:
-     * usamos a Web Speech API.
-     *
-     * Posteriormente podemos substituir
-     * por arquivos de áudio próprios.
-     */
-
-    if (!("speechSynthesis" in window)) {
+    if (!("speechSynthesis" in window))
         return;
-    }
 
-    speechSynthesis.cancel();
-
-    const utterance =
+    const speech =
         new SpeechSynthesisUtterance(letter);
 
-    utterance.lang = "en-US";
+    speech.lang = "en-US";
 
-    utterance.rate = 0.8;
+    speech.rate = 0.75;
 
-    speechSynthesis.speak(utterance);
+    speech.pitch = 1.1;
+
+    window.speechSynthesis.cancel();
+
+    window.speechSynthesis.speak(speech);
 
 }
 
 
-/* =========================
-   ÁUDIO DA PALAVRA
-========================= */
+function speakWord(word) {
 
-function playWordSound(word) {
-
-    if (!("speechSynthesis" in window)) {
+    if (!("speechSynthesis" in window))
         return;
-    }
 
-    speechSynthesis.cancel();
-
-    const utterance =
+    const speech =
         new SpeechSynthesisUtterance(word);
 
-    utterance.lang = "en-US";
+    speech.lang = "en-US";
 
-    utterance.rate = 0.75;
+    speech.rate = 0.75;
 
-    speechSynthesis.speak(utterance);
+    speech.pitch = 1.05;
 
-}
+    window.speechSynthesis.cancel();
 
-
-/* =========================
-   LIMPA LETRAS
-========================= */
-
-function clearLetters() {
-
-    lettersContainer.innerHTML = "";
-
-    letterObjects = [];
-
-    lastTime = 0;
-
-}
-
-
-/* =========================
-   FIM DO JOGO
-========================= */
-
-function endGame() {
-
-    gameRunning = false;
-
-    alert(
-        `Congratulations, ${playerName}!\n\nScore: ${score}`
-    );
+    window.speechSynthesis.speak(speech);
 
 }
