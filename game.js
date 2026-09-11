@@ -15,7 +15,7 @@
     word: document.querySelector("#word-display"), score: document.querySelector("#score"), lives: document.querySelector("#lives"),
     area: document.querySelector("#game-area"), letters: document.querySelector("#letters-container"),
     jump: document.querySelector("#jump-button"), message: document.querySelector("#message"),
-    endPanel: document.querySelector("#end-panel"), retry: document.querySelector("#retry-button")
+    endPanel: document.querySelector("#end-panel"), retry: document.querySelector("#retry-button"), celebration: document.querySelector("#celebration")
   };
 
   const state = { active: false, character: "boy", score: 0, lives: 5, wordIndex: -1, word: "", letterIndex: 0, playerY: 0, velocityY: 0, speed: 0, rightHeld: false, jumpKeyHeld: false, lastTime: 0, spawner: 0, letters: [], messageTimer: 0, finishing: false };
@@ -153,7 +153,7 @@
     item.node.classList.add("caught"); window.setTimeout(() => item.node.remove(), 180); state.letters.splice(index, 1);
     state.letterIndex++; state.score += 10; el.score.textContent = String(state.score); renderWord(); speak(item.char); playTune("letter");
     if (state.letterIndex === state.word.length) {
-      state.finishing = true; state.score += 25; el.score.textContent = String(state.score); showMessage(`${state.word}! Great job! +25`, 1500); speak(state.word); playTune("win");
+      state.finishing = true; state.score += 25; el.score.textContent = String(state.score); showMessage(`${state.word}! Great job! +25`, 1500); speak(state.word); playTune("win"); celebrate();
       window.setTimeout(nextWord, 1700);
     } else { showMessage(`Great! Now find ${neededLetter()}`, 850); }
   }
@@ -170,6 +170,22 @@
   function showEndScreen() {
     el.endPanel.classList.remove("hidden");
     el.retry.focus();
+  }
+
+  function celebrate() {
+    const colors = ["#f8b923", "#ef5a72", "#3cae65", "#4d9fe8", "#9b6ddd"];
+    el.celebration.innerHTML = "";
+    for (let index = 0; index < 28; index++) {
+      const confetti = document.createElement("i");
+      confetti.className = "confetti";
+      confetti.style.left = `${12 + Math.random() * 76}%`;
+      confetti.style.background = colors[index % colors.length];
+      confetti.style.setProperty("--delay", `${Math.random() * 0.28}s`);
+      confetti.style.setProperty("--turn", `${-220 + Math.random() * 440}deg`);
+      el.celebration.append(confetti);
+    }
+    el.celebration.classList.add("active");
+    window.setTimeout(() => { el.celebration.classList.remove("active"); el.celebration.innerHTML = ""; }, 1500);
   }
 
   function speak(text, quiet = false) {
