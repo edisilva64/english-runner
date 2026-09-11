@@ -1,42 +1,4 @@
-const WORDS = [
-    {
-        word: "CAT",
-        level: 1
-    },
-    {
-        word: "DOG",
-        level: 1
-    },
-    {
-        word: "SUN",
-        level: 1
-    },
-    {
-        word: "RED",
-        level: 1
-    },
-    {
-        word: "BED",
-        level: 1
-    },
-    {
-        word: "HAT",
-        level: 1
-    },
-    {
-        word: "CAR",
-        level: 1
-    },
-    {
-        word: "PEN",
-        level: 1
-    },
-    {
-        word: "BOOK",
-        level: 1
-    },
-    {
-        word: "FISH",
-        level: 1
-    }
+/* Loaded before game.js. Keep this as a classic script for GitHub Pages. */
+window.ENGLISH_RUNNER_WORDS = [
+  "CAT", "DOG", "SUN", "CAR", "BOOK", "TREE", "FISH", "BIRD", "APPLE", "HOUSE"
 ];
