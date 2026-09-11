@@ -12,12 +12,12 @@
     name: document.querySelector("#player-name"), displayName: document.querySelector("#display-name"),
     startButton: document.querySelector("#start-button"), startError: document.querySelector("#start-error"),
     characters: [...document.querySelectorAll(".character")], player: document.querySelector("#player"),
-    word: document.querySelector("#word-display"), score: document.querySelector("#score"),
+    word: document.querySelector("#word-display"), score: document.querySelector("#score"), lives: document.querySelector("#lives"),
     area: document.querySelector("#game-area"), letters: document.querySelector("#letters-container"),
     jump: document.querySelector("#jump-button"), message: document.querySelector("#message")
   };
 
-  const state = { active: false, character: "boy", score: 0, wordIndex: -1, word: "", letterIndex: 0, playerY: 0, velocityY: 0, lastTime: 0, spawner: 0, letters: [], messageTimer: 0, finishing: false };
+  const state = { active: false, character: "boy", score: 0, lives: 5, wordIndex: -1, word: "", letterIndex: 0, playerY: 0, velocityY: 0, lastTime: 0, spawner: 0, letters: [], messageTimer: 0, finishing: false };
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const FLOOR = 82;
   const GRAVITY = 1900;
@@ -31,8 +31,9 @@
 
   function begin() {
     if (!words.length) { el.startError.textContent = "The word list could not load. Check data/words.js and reload the page."; return; }
-    state.score = 0; state.wordIndex = -1; state.letters = []; state.active = true; state.finishing = false;
+    state.score = 0; state.lives = 5; state.wordIndex = -1; state.letters = []; state.active = true; state.finishing = false;
     el.score.textContent = "0";
+    renderLives();
     el.displayName.textContent = el.name.value.trim().toUpperCase() || "PLAYER";
     el.player.className = `player ${state.character}`;
     el.start.classList.add("hidden"); el.game.classList.remove("hidden");
@@ -51,6 +52,17 @@
   function renderWord() {
     el.word.innerHTML = "";
     [...state.word].forEach((letter, index) => { const tile = document.createElement("span"); tile.className = "word-letter" + (index >= state.letterIndex ? " empty" : ""); tile.textContent = letter; el.word.append(tile); });
+  }
+
+  function renderLives() {
+    el.lives.innerHTML = "";
+    for (let index = 0; index < 5; index++) {
+      const star = document.createElement("span");
+      star.className = index < state.lives ? "star" : "star lost";
+      star.textContent = "★";
+      el.lives.append(star);
+    }
+    el.lives.setAttribute("aria-label", `${state.lives} ${state.lives === 1 ? "star" : "stars"} remaining`);
   }
 
   function spawnLetter(forceCorrect = false) {
@@ -89,7 +101,7 @@
     for (let i = state.letters.length - 1; i >= 0; i--) {
       const item = state.letters[i]; item.x -= LETTER_SPEED * dt; item.node.style.transform = `translate(${item.x}px, ${-item.y}px)`;
       const box = item.node.getBoundingClientRect();
-      if (overlaps(playerBox, box)) { collect(item, i); continue; }
+      if (overlaps(playerBox, box)) { handleCollision(item, i); continue; }
       if (item.x < -70) removeLetter(i);
     }
   }
@@ -97,19 +109,65 @@
   function overlaps(a, b) { return a.left < b.right - 8 && a.right - 8 > b.left && a.top < b.bottom - 8 && a.bottom - 8 > b.top; }
   function removeLetter(index) { state.letters[index].node.remove(); state.letters.splice(index, 1); }
 
-  function collect(item, index) {
-    if (item.char !== neededLetter() || state.finishing) return; // Wrong letters are harmless distractions in this first version.
+  function handleCollision(item, index) {
+    if (state.finishing) return;
+    if (item.char !== neededLetter()) {
+      removeLetter(index);
+      state.lives--;
+      renderLives();
+      playTune("mistake");
+      if (state.lives === 0) {
+        state.finishing = true;
+        clearLetters();
+        showMessage("Let's try again!", 2100);
+        window.setTimeout(retryWord, 2200);
+      } else {
+        showMessage(`Oops! ${state.lives} stars left`, 900);
+      }
+      return;
+    }
+    collectCorrect(item, index);
+  }
+
+  function collectCorrect(item, index) {
     item.node.classList.add("caught"); window.setTimeout(() => item.node.remove(), 180); state.letters.splice(index, 1);
-    state.letterIndex++; state.score += 10; el.score.textContent = String(state.score); renderWord(); speak(item.char);
+    state.letterIndex++; state.score += 10; el.score.textContent = String(state.score); renderWord(); speak(item.char); playTune("letter");
     if (state.letterIndex === state.word.length) {
-      state.finishing = true; state.score += 25; el.score.textContent = String(state.score); showMessage(`${state.word}! Great job! +25`, 1500); speak(state.word);
+      state.finishing = true; state.score += 25; el.score.textContent = String(state.score); showMessage(`${state.word}! Great job! +25`, 1500); speak(state.word); playTune("win");
       window.setTimeout(nextWord, 1700);
     } else { showMessage(`Great! Now find ${neededLetter()}`, 850); }
+  }
+
+  function retryWord() {
+    state.lives = 5;
+    state.letterIndex = 0;
+    state.spawner = 0;
+    state.finishing = false;
+    renderLives(); renderWord(); clearLetters(); spawnLetter(true);
+    showMessage(`Try again: find ${neededLetter()}!`, 1000);
   }
 
   function speak(text, quiet = false) {
     if (!("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(text); utterance.lang = "en-US"; utterance.rate = quiet ? 0.8 : 0.72; window.speechSynthesis.speak(utterance);
+  }
+  // Tiny synthesized sound cues keep this prototype self-contained. They use
+  // Web Audio only after the child has pressed START GAME, satisfying autoplay rules.
+  function playTune(kind) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    const context = new AudioContextClass();
+    const notes = kind === "win" ? [523, 659, 784, 1047] : kind === "mistake" ? [330, 262] : [523, 659];
+    const duration = kind === "mistake" ? 0.16 : 0.12;
+    notes.forEach((frequency, index) => {
+      const oscillator = context.createOscillator(); const gain = context.createGain();
+      oscillator.type = kind === "mistake" ? "sine" : "triangle";
+      oscillator.frequency.value = frequency; gain.gain.setValueAtTime(0.0001, context.currentTime + index * duration);
+      gain.gain.exponentialRampToValueAtTime(0.11, context.currentTime + index * duration + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + index * duration + duration);
+      oscillator.connect(gain).connect(context.destination); oscillator.start(context.currentTime + index * duration); oscillator.stop(context.currentTime + index * duration + duration + 0.03);
+    });
+    window.setTimeout(() => context.close(), notes.length * duration * 1000 + 150);
   }
   function showMessage(text, duration) { el.message.textContent = text; el.message.classList.add("visible"); clearTimeout(state.messageTimer); state.messageTimer = window.setTimeout(() => el.message.classList.remove("visible"), duration); }
 
