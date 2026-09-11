@@ -1,153 +1,60 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Runner</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>English Runner</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <section id="start-screen" class="screen">
+    <div class="start-box">
+      <p class="eyebrow">LEARN WHILE YOU PLAY</p>
+      <h1>English Runner</h1>
+      <p class="subtitle">Run, jump and find each letter of the word.</p>
 
-    <!-- TELA INICIAL -->
-    <section id="start-screen" class="screen">
+      <label for="player-name">Your name</label>
+      <input id="player-name" maxlength="15" autocomplete="name" placeholder="Enter your name">
 
-        <div class="start-box">
+      <h2>Choose your character</h2>
+      <div class="characters" role="group" aria-label="Choose your character">
+        <button class="character selected" data-character="boy" type="button" aria-pressed="true">
+          <span class="preview-person boy"><i class="p-head"></i><i class="p-body"></i><i class="p-arm a-left"></i><i class="p-arm a-right"></i><i class="p-leg l-left"></i><i class="p-leg l-right"></i></span>
+          <span>Boy</span>
+        </button>
+        <button class="character" data-character="girl" type="button" aria-pressed="false">
+          <span class="preview-person girl"><i class="p-hair"></i><i class="p-head"></i><i class="p-body"></i><i class="p-arm a-left"></i><i class="p-arm a-right"></i><i class="p-leg l-left"></i><i class="p-leg l-right"></i></span>
+          <span>Girl</span>
+        </button>
+      </div>
+      <button id="start-button" type="button">START GAME</button>
+      <p id="start-error" class="start-error" aria-live="polite"></p>
+    </div>
+  </section>
 
-            <h1>English Runner</h1>
+  <section id="game-screen" class="screen hidden" aria-label="English Runner game">
+    <header class="game-header">
+      <div class="stat"><small>PLAYER</small><strong id="display-name">PLAYER</strong></div>
+      <div class="target-container"><small>WORD</small><div id="word-display" aria-label="Target word"></div></div>
+      <div class="stat score-stat"><small>SCORE</small><strong id="score">0</strong></div>
+    </header>
 
-            <p class="subtitle">
-                Run, find the letters and learn English!
-            </p>
-
-            <label>Your name</label>
-            <input
-                type="text"
-                id="player-name"
-                placeholder="Enter your name"
-                maxlength="15"
-            >
-
-            <h2>Choose your character</h2>
-
-            <div class="characters">
-
-                <button class="character selected" data-character="boy">
-                    <div class="character-preview boy-preview">
-                        <div class="head"></div>
-                        <div class="body"></div>
-                        <div class="arm left-arm"></div>
-                        <div class="arm right-arm"></div>
-                        <div class="leg left-leg"></div>
-                        <div class="leg right-leg"></div>
-                    </div>
-                    <span>Boy</span>
-                </button>
-
-                <button class="character" data-character="girl">
-                    <div class="character-preview girl-preview">
-                        <div class="head"></div>
-                        <div class="hair"></div>
-                        <div class="body"></div>
-                        <div class="arm left-arm"></div>
-                        <div class="arm right-arm"></div>
-                        <div class="leg left-leg"></div>
-                        <div class="leg right-leg"></div>
-                    </div>
-                    <span>Girl</span>
-                </button>
-
-            </div>
-
-            <button id="start-button">
-                START GAME
-            </button>
-
-        </div>
-
-    </section>
-
-
-    <!-- JOGO -->
-    <section id="game-screen" class="screen hidden">
-
-        <header class="game-header">
-
-            <div>
-                <small>PLAYER</small>
-                <strong id="display-name">PLAYER</strong>
-            </div>
-
-            <div class="target-container">
-                <small>WORD</small>
-                <div id="word-display"></div>
-            </div>
-
-            <div>
-                <small>SCORE</small>
-                <strong id="score">0</strong>
-            </div>
-
-        </header>
-
-
-        <main id="game-area">
-
-            <!-- cenário -->
-            <div class="sky"></div>
-
-            <div class="cloud cloud1"></div>
-            <div class="cloud cloud2"></div>
-
-            <div class="mountains"></div>
-
-            <div class="ground">
-                <div class="ground-line"></div>
-            </div>
-
-            <!-- letras aparecem aqui -->
-            <div id="letters-container"></div>
-
-            <!-- personagem -->
-            <div id="player" class="player">
-
-                <div class="player-head"></div>
-                <div class="player-hair"></div>
-
-                <div class="player-body"></div>
-
-                <div class="player-arm player-arm-left"></div>
-                <div class="player-arm player-arm-right"></div>
-
-                <div class="player-leg player-leg-left"></div>
-                <div class="player-leg player-leg-right"></div>
-
-            </div>
-
-            <!-- mensagem -->
-            <div id="message"></div>
-
-        </main>
-
-
-        <div class="controls">
-
-            <button id="jump-button">
-                ↑
-                <span>JUMP</span>
-            </button>
-
-            <p>
-                Press <b>SPACE</b> or <b>↑</b> to jump
-            </p>
-
-        </div>
-
-    </section>
-
-
-    <script src="data/words.js"></script>
-    <script src="game.js"></script>
-
+    <main id="game-area" tabindex="0" aria-label="Game area. Press Space or Arrow Up to jump.">
+      <div class="sky"></div><div class="sun"></div>
+      <div class="cloud cloud-one"></div><div class="cloud cloud-two"></div>
+      <div class="mountains mountains-back"></div><div class="mountains mountains-front"></div>
+      <div class="ground"><div class="ground-line"></div></div>
+      <div id="letters-container" aria-hidden="true"></div>
+      <div id="player" class="player boy" aria-hidden="true">
+        <div class="player-hair"></div><div class="player-head"></div><div class="player-body"></div>
+        <div class="player-arm player-arm-left"></div><div class="player-arm player-arm-right"></div>
+        <div class="player-leg player-leg-left"></div><div class="player-leg player-leg-right"></div>
+      </div>
+      <div id="message" role="status" aria-live="polite"></div>
+    </main>
+    <div class="controls"><button id="jump-button" type="button" aria-label="Jump"><b>↑</b><span>JUMP</span></button><p>Press <b>SPACE</b> or <b>↑</b> to jump</p></div>
+  </section>
+  <script src="data/words.js"></script>
+  <script src="game.js"></script>
 </body>
 </html>
