@@ -17,12 +17,14 @@
     jump: document.querySelector("#jump-button"), message: document.querySelector("#message")
   };
 
-  const state = { active: false, character: "boy", score: 0, lives: 5, wordIndex: -1, word: "", letterIndex: 0, playerY: 0, velocityY: 0, lastTime: 0, spawner: 0, letters: [], messageTimer: 0, finishing: false };
+  const state = { active: false, character: "boy", score: 0, lives: 5, wordIndex: -1, word: "", letterIndex: 0, playerY: 0, velocityY: 0, speed: 0, rightHeld: false, jumpKeyHeld: false, lastTime: 0, spawner: 0, letters: [], messageTimer: 0, finishing: false };
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const FLOOR = 82;
   const GRAVITY = 1900;
   const JUMP_SPEED = 760;
-  const LETTER_SPEED = 250;
+  const MAX_RUN_SPEED = 350;
+  const ACCELERATION = 820;
+  const BRAKE = 1100;
 
   function chooseCharacter(button) {
     state.character = button.dataset.character;
@@ -31,13 +33,13 @@
 
   function begin() {
     if (!words.length) { el.startError.textContent = "The word list could not load. Check data/words.js and reload the page."; return; }
-    state.score = 0; state.lives = 5; state.wordIndex = -1; state.letters = []; state.active = true; state.finishing = false;
+    state.score = 0; state.lives = 5; state.speed = 0; state.rightHeld = false; state.wordIndex = -1; state.letters = []; state.active = true; state.finishing = false;
     el.score.textContent = "0";
     renderLives();
     el.displayName.textContent = el.name.value.trim().toUpperCase() || "PLAYER";
     el.player.className = `player ${state.character}`;
     el.start.classList.add("hidden"); el.game.classList.remove("hidden");
-    nextWord(); el.area.focus(); state.lastTime = performance.now(); requestAnimationFrame(loop);
+    nextWord(); showMessage("Hold → to run. Press SPACE or ↑ to jump!", 1800); el.area.focus(); state.lastTime = performance.now(); requestAnimationFrame(loop);
   }
 
   function nextWord() {
@@ -85,9 +87,16 @@
   function loop(time) {
     if (!state.active) return;
     const dt = Math.min((time - state.lastTime) / 1000, 0.04); state.lastTime = time;
-    updatePlayer(dt); updateLetters(dt); state.spawner += dt;
+    updateSpeed(dt); updatePlayer(dt); updateLetters(dt);
+    if (state.speed > 1) state.spawner += dt;
     if (!state.finishing && state.spawner > 1.25) { spawnLetter(); state.spawner = 0; }
     requestAnimationFrame(loop);
+  }
+
+  function updateSpeed(dt) {
+    const change = (state.rightHeld ? ACCELERATION : -BRAKE) * dt;
+    state.speed = Math.max(0, Math.min(MAX_RUN_SPEED, state.speed + change));
+    el.player.classList.toggle("running", state.speed > 25);
   }
 
   function updatePlayer(dt) {
@@ -99,7 +108,7 @@
   function updateLetters(dt) {
     const playerBox = el.player.getBoundingClientRect();
     for (let i = state.letters.length - 1; i >= 0; i--) {
-      const item = state.letters[i]; item.x -= LETTER_SPEED * dt; item.node.style.transform = `translate(${item.x}px, ${-item.y}px)`;
+      const item = state.letters[i]; item.x -= state.speed * dt; item.node.style.transform = `translate(${item.x}px, ${-item.y}px)`;
       const box = item.node.getBoundingClientRect();
       if (overlaps(playerBox, box)) { handleCollision(item, i); continue; }
       if (item.x < -70) removeLetter(i);
@@ -119,6 +128,9 @@
       if (state.lives === 0) {
         state.finishing = true;
         clearLetters();
+        // A new attempt starts from zero, so a defeat cannot carry points forward.
+        state.score = 0;
+        el.score.textContent = "0";
         showMessage("Let's try again!", 2100);
         window.setTimeout(retryWord, 2200);
       } else {
@@ -174,5 +186,15 @@
   el.characters.forEach(button => button.addEventListener("click", () => chooseCharacter(button)));
   el.startButton.addEventListener("click", begin); el.name.addEventListener("keydown", event => { if (event.key === "Enter") begin(); });
   el.jump.addEventListener("click", jump);
-  window.addEventListener("keydown", event => { if (event.code === "Space" || event.key === "ArrowUp") { event.preventDefault(); jump(); } });
+  window.addEventListener("keydown", event => {
+    if (event.key === "ArrowRight") { event.preventDefault(); state.rightHeld = true; }
+    if (event.code === "Space" || event.key === "ArrowUp") {
+      event.preventDefault();
+      if (!state.jumpKeyHeld) { state.jumpKeyHeld = true; jump(); }
+    }
+  });
+  window.addEventListener("keyup", event => {
+    if (event.key === "ArrowRight") state.rightHeld = false;
+    if (event.code === "Space" || event.key === "ArrowUp") state.jumpKeyHeld = false;
+  });
 })();
