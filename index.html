@@ -47,11 +47,14 @@
       <div class="ground"><div class="ground-line"></div></div>
       <div id="letters-container" aria-hidden="true"></div>
       <div id="player" class="player boy" aria-hidden="true">
-        <div class="player-hair"></div><div class="player-head"></div><div class="player-body"></div>
+        <div class="player-hair"></div><div class="player-head"></div><div class="player-eye"></div><div class="player-body"></div>
         <div class="player-arm player-arm-left"></div><div class="player-arm player-arm-right"></div>
         <div class="player-leg player-leg-left"></div><div class="player-leg player-leg-right"></div>
       </div>
       <div id="message" role="status" aria-live="polite"></div>
+      <div id="end-panel" class="end-panel hidden" role="dialog" aria-modal="true" aria-labelledby="end-title">
+        <div class="end-card"><span class="end-stars">★ ★ ★</span><h2 id="end-title">Let's try again!</h2><p>You can do it. Start this word with five new stars.</p><button id="retry-button" type="button">TRY AGAIN</button></div>
+      </div>
     </main>
     <div class="controls"><button id="jump-button" type="button" aria-label="Jump"><b>↑</b><span>JUMP</span></button><p>Hold <b>→</b> to run · Press <b>SPACE</b> or <b>↑</b> to jump</p></div>
   </section>

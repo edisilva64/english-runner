@@ -14,7 +14,8 @@
     characters: [...document.querySelectorAll(".character")], player: document.querySelector("#player"),
     word: document.querySelector("#word-display"), score: document.querySelector("#score"), lives: document.querySelector("#lives"),
     area: document.querySelector("#game-area"), letters: document.querySelector("#letters-container"),
-    jump: document.querySelector("#jump-button"), message: document.querySelector("#message")
+    jump: document.querySelector("#jump-button"), message: document.querySelector("#message"),
+    endPanel: document.querySelector("#end-panel"), retry: document.querySelector("#retry-button")
   };
 
   const state = { active: false, character: "boy", score: 0, lives: 5, wordIndex: -1, word: "", letterIndex: 0, playerY: 0, velocityY: 0, speed: 0, rightHeld: false, jumpKeyHeld: false, lastTime: 0, spawner: 0, letters: [], messageTimer: 0, finishing: false };
@@ -94,6 +95,11 @@
   }
 
   function updateSpeed(dt) {
+    if (state.finishing) {
+      state.speed = 0;
+      el.player.classList.remove("running");
+      return;
+    }
     const change = (state.rightHeld ? ACCELERATION : -BRAKE) * dt;
     state.speed = Math.max(0, Math.min(MAX_RUN_SPEED, state.speed + change));
     el.player.classList.toggle("running", state.speed > 25);
@@ -131,8 +137,10 @@
         // A new attempt starts from zero, so a defeat cannot carry points forward.
         state.score = 0;
         el.score.textContent = "0";
-        showMessage("Let's try again!", 2100);
-        window.setTimeout(retryWord, 2200);
+        state.speed = 0;
+        state.rightHeld = false;
+        el.player.classList.remove("running");
+        showEndScreen();
       } else {
         showMessage(`Oops! ${state.lives} stars left`, 900);
       }
@@ -157,6 +165,11 @@
     state.finishing = false;
     renderLives(); renderWord(); clearLetters(); spawnLetter(true);
     showMessage(`Try again: find ${neededLetter()}!`, 1000);
+  }
+
+  function showEndScreen() {
+    el.endPanel.classList.remove("hidden");
+    el.retry.focus();
   }
 
   function speak(text, quiet = false) {
@@ -186,6 +199,7 @@
   el.characters.forEach(button => button.addEventListener("click", () => chooseCharacter(button)));
   el.startButton.addEventListener("click", begin); el.name.addEventListener("keydown", event => { if (event.key === "Enter") begin(); });
   el.jump.addEventListener("click", jump);
+  el.retry.addEventListener("click", () => { el.endPanel.classList.add("hidden"); retryWord(); el.area.focus(); });
   window.addEventListener("keydown", event => {
     if (event.key === "ArrowRight") { event.preventDefault(); state.rightHeld = true; }
     if (event.code === "Space" || event.key === "ArrowUp") {
