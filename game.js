@@ -13,7 +13,7 @@
     startButton: document.querySelector("#start-button"), startError: document.querySelector("#start-error"),
     characters: [...document.querySelectorAll(".character")], player: document.querySelector("#player"),
     word: document.querySelector("#word-display"), phase: document.querySelector("#phase-display"), score: document.querySelector("#score"), lives: document.querySelector("#lives"),
-    area: document.querySelector("#game-area"), letters: document.querySelector("#letters-container"),
+    area: document.querySelector("#game-area"), letters: document.querySelector("#letters-container"), targetPrompt: document.querySelector("#target-prompt"),
     jump: document.querySelector("#jump-button"), message: document.querySelector("#message"),
     endPanel: document.querySelector("#end-panel"), retry: document.querySelector("#retry-button"), celebration: document.querySelector("#celebration"),
     phasePanel: document.querySelector("#phase-panel"), phaseTitle: document.querySelector("#phase-title"), phaseCopy: document.querySelector("#phase-copy"), phaseButton: document.querySelector("#phase-button")
@@ -58,6 +58,13 @@
   function renderWord() {
     el.word.innerHTML = "";
     [...state.word].forEach((letter, index) => { const tile = document.createElement("span"); tile.className = "word-letter" + (index >= state.letterIndex ? " empty" : ""); tile.textContent = letter; el.word.append(tile); });
+    renderTargetPrompt();
+  }
+
+  function renderTargetPrompt() {
+    const letter = neededLetter();
+    el.targetPrompt.querySelector("strong").textContent = letter || "✓";
+    el.targetPrompt.setAttribute("aria-label", letter ? `Find the letter ${letter}` : "Word complete");
   }
 
   function renderLives() {
