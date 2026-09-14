@@ -15,10 +15,11 @@
     word: document.querySelector("#word-display"), phase: document.querySelector("#phase-display"), score: document.querySelector("#score"), lives: document.querySelector("#lives"),
     area: document.querySelector("#game-area"), letters: document.querySelector("#letters-container"),
     jump: document.querySelector("#jump-button"), message: document.querySelector("#message"),
-    endPanel: document.querySelector("#end-panel"), retry: document.querySelector("#retry-button"), celebration: document.querySelector("#celebration")
+    endPanel: document.querySelector("#end-panel"), retry: document.querySelector("#retry-button"), celebration: document.querySelector("#celebration"),
+    phasePanel: document.querySelector("#phase-panel"), phaseTitle: document.querySelector("#phase-title"), phaseCopy: document.querySelector("#phase-copy"), phaseButton: document.querySelector("#phase-button")
   };
 
-  const state = { active: false, character: "boy", score: 0, lives: 5, wordIndex: -1, word: "", letterIndex: 0, playerY: 0, velocityY: 0, speed: 0, rightHeld: false, jumpKeyHeld: false, lastTime: 0, spawner: 0, letters: [], messageTimer: 0, finishing: false };
+  const state = { active: false, character: "boy", score: 0, lives: 5, wordIndex: -1, word: "", letterIndex: 0, playerY: 0, velocityY: 0, speed: 0, rightHeld: false, jumpKeyHeld: false, lastTime: 0, spawner: 0, letters: [], messageTimer: 0, finishing: false, phaseIsFinal: false };
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const FLOOR = 82;
   const GRAVITY = 1900;
@@ -163,9 +164,17 @@
     state.letterIndex++; state.score += 10; el.score.textContent = String(state.score); renderWord(); speak(item.char); playTune("letter");
     if (state.letterIndex === state.word.length) {
       state.finishing = true; state.score += 25; el.score.textContent = String(state.score);
-      const phaseFinished = (state.wordIndex + 1) % WORDS_PER_PHASE === 0 && state.wordIndex + 1 < words.length;
-      showMessage(phaseFinished ? `Phase complete! Great job! +25` : `${state.word}! Great job! +25`, 1500); speak(state.word); playTune("win"); celebrate();
-      window.setTimeout(nextWord, 1700);
+      const phaseFinished = (state.wordIndex + 1) % WORDS_PER_PHASE === 0 || state.wordIndex + 1 === words.length;
+      showMessage(phaseFinished ? "Phase complete!" : `${state.word}! Great job! +25`, 1500); speak(state.word); playTune("win"); celebrate(phaseFinished ? 60 : 28);
+      if (phaseFinished) {
+        clearLetters();
+        state.speed = 0;
+        state.rightHeld = false;
+        state.phaseIsFinal = state.wordIndex + 1 === words.length;
+        window.setTimeout(showPhaseEnd, 520);
+      } else {
+        window.setTimeout(nextWord, 1700);
+      }
     } else { showMessage(`Great! Now find ${neededLetter()}`, 850); }
   }
 
@@ -183,10 +192,39 @@
     el.retry.focus();
   }
 
-  function celebrate() {
+  function showPhaseEnd() {
+    const completedPhase = Math.floor(state.wordIndex / WORDS_PER_PHASE) + 1;
+    if (state.phaseIsFinal) {
+      el.phaseTitle.textContent = "ALL PHASES COMPLETE!";
+      el.phaseCopy.textContent = `Amazing! You completed all ${Math.ceil(words.length / WORDS_PER_PHASE)} phases.`;
+      el.phaseButton.textContent = "PLAY AGAIN";
+    } else {
+      el.phaseTitle.textContent = `PHASE ${completedPhase} COMPLETE!`;
+      el.phaseCopy.textContent = "Wonderful! Take a breath, then begin the next phase.";
+      el.phaseButton.textContent = `START PHASE ${completedPhase + 1}`;
+    }
+    el.phasePanel.classList.remove("hidden");
+    el.phaseButton.focus();
+  }
+
+  function startFollowingPhase() {
+    el.phasePanel.classList.add("hidden");
+    if (state.phaseIsFinal) {
+      state.score = 0;
+      state.lives = 5;
+      state.wordIndex = -1;
+      el.score.textContent = "0";
+      renderLives();
+    }
+    state.phaseIsFinal = false;
+    nextWord();
+    el.area.focus();
+  }
+
+  function celebrate(count = 28) {
     const colors = ["#f8b923", "#ef5a72", "#3cae65", "#4d9fe8", "#9b6ddd"];
     el.celebration.innerHTML = "";
-    for (let index = 0; index < 28; index++) {
+    for (let index = 0; index < count; index++) {
       const confetti = document.createElement("i");
       confetti.className = "confetti";
       confetti.style.left = `${12 + Math.random() * 76}%`;
@@ -227,6 +265,7 @@
   el.startButton.addEventListener("click", begin); el.name.addEventListener("keydown", event => { if (event.key === "Enter") begin(); });
   el.jump.addEventListener("click", jump);
   el.retry.addEventListener("click", () => { el.endPanel.classList.add("hidden"); retryWord(); el.area.focus(); });
+  el.phaseButton.addEventListener("click", startFollowingPhase);
   window.addEventListener("keydown", event => {
     if (event.key === "ArrowRight") { event.preventDefault(); state.rightHeld = true; }
     if (event.code === "Space" || event.key === "ArrowUp") {
