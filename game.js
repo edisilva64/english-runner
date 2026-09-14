@@ -12,7 +12,7 @@
     name: document.querySelector("#player-name"), displayName: document.querySelector("#display-name"),
     startButton: document.querySelector("#start-button"), startError: document.querySelector("#start-error"),
     characters: [...document.querySelectorAll(".character")], player: document.querySelector("#player"),
-    word: document.querySelector("#word-display"), score: document.querySelector("#score"), lives: document.querySelector("#lives"),
+    word: document.querySelector("#word-display"), phase: document.querySelector("#phase-display"), score: document.querySelector("#score"), lives: document.querySelector("#lives"),
     area: document.querySelector("#game-area"), letters: document.querySelector("#letters-container"),
     jump: document.querySelector("#jump-button"), message: document.querySelector("#message"),
     endPanel: document.querySelector("#end-panel"), retry: document.querySelector("#retry-button"), celebration: document.querySelector("#celebration")
@@ -26,6 +26,7 @@
   const MAX_RUN_SPEED = 350;
   const ACCELERATION = 820;
   const BRAKE = 1100;
+  const WORDS_PER_PHASE = 3;
 
   function chooseCharacter(button) {
     state.character = button.dataset.character;
@@ -46,6 +47,7 @@
   function nextWord() {
     state.wordIndex = (state.wordIndex + 1) % words.length;
     state.word = words[state.wordIndex]; state.letterIndex = 0; state.spawner = 0; state.finishing = false;
+    renderPhase();
     clearLetters(); renderWord(); showMessage(`Find the letter ${neededLetter()}!`, 1100); speak(state.word, true);
     // A first target is placed soon enough that every round visibly begins.
     spawnLetter(true);
@@ -66,6 +68,13 @@
       el.lives.append(star);
     }
     el.lives.setAttribute("aria-label", `${state.lives} ${state.lives === 1 ? "star" : "stars"} remaining`);
+  }
+
+  function renderPhase() {
+    const currentPhase = Math.floor(state.wordIndex / WORDS_PER_PHASE) + 1;
+    const totalPhases = Math.ceil(words.length / WORDS_PER_PHASE);
+    el.phase.textContent = `PHASE ${currentPhase} · WORD`;
+    el.phase.setAttribute("aria-label", `Phase ${currentPhase} of ${totalPhases}`);
   }
 
   function spawnLetter(forceCorrect = false) {
@@ -153,7 +162,9 @@
     item.node.classList.add("caught"); window.setTimeout(() => item.node.remove(), 180); state.letters.splice(index, 1);
     state.letterIndex++; state.score += 10; el.score.textContent = String(state.score); renderWord(); speak(item.char); playTune("letter");
     if (state.letterIndex === state.word.length) {
-      state.finishing = true; state.score += 25; el.score.textContent = String(state.score); showMessage(`${state.word}! Great job! +25`, 1500); speak(state.word); playTune("win"); celebrate();
+      state.finishing = true; state.score += 25; el.score.textContent = String(state.score);
+      const phaseFinished = (state.wordIndex + 1) % WORDS_PER_PHASE === 0 && state.wordIndex + 1 < words.length;
+      showMessage(phaseFinished ? `Phase complete! Great job! +25` : `${state.word}! Great job! +25`, 1500); speak(state.word); playTune("win"); celebrate();
       window.setTimeout(nextWord, 1700);
     } else { showMessage(`Great! Now find ${neededLetter()}`, 850); }
   }
